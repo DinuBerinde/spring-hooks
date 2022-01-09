@@ -1,4 +1,4 @@
-import com.dinuberinde.webhooks.WebhookAOP;
+import com.dinuberinde.webhooks.WebhooksAOP;
 import controller.Controller;
 import helper.DataHolder;
 import org.junit.jupiter.api.Test;
@@ -15,10 +15,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest(classes = {Controller.class, WebhookAOP.class, LogWebhookComponent.class})
+@SpringBootTest(classes = {Controller.class, WebhooksAOP.class, LogWebhookComponent.class})
 @AutoConfigureMockMvc
 @Import(AnnotationAwareAspectJAutoProxyCreator.class)
-public class WebhookTest {
+public class WebhookTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -81,6 +81,9 @@ public class WebhookTest {
         } catch (Exception e) {
             assertEquals(DataHolder.map.get("Exception").value, "java.lang.NullPointerException");
             assertEquals(DataHolder.map.get("Exception").tag, "myexceptiontag");
+
+            assertEquals("/exception", DataHolder.map.get("LogWebhookPOST").tag);
+            assertEquals("3", DataHolder.map.get("LogWebhookPOST").value);
         }
     }
 
