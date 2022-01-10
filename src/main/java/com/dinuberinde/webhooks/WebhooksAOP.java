@@ -33,8 +33,7 @@ public class WebhooksAOP {
     }};
 
     /**
-     * Handler of {@link PreWebhook}. The webhook will be invoked before the
-     * target annotated method will be invoked.
+     * Handler of {@link PreWebhook} annotation.
      *
      * @param preWebhook the annotation
      */
@@ -48,8 +47,7 @@ public class WebhooksAOP {
     }
 
     /**
-     * Handler of {@link PostWebhook}. The webhook will be invoked after the
-     * target annotated method finished normally or with an exception.
+     * Handler of the {@link PostWebhook} annotation.
      *
      * @param postWebhook the annotation
      */
@@ -63,9 +61,7 @@ public class WebhooksAOP {
     }
 
     /**
-     * Handler of the {@link ExceptionWebhook}. The webhook method will be invoked after
-     * the target annotated method
-     * with the exception thrown by the target annotated method.
+     * Handler of the {@link ExceptionWebhook} annotation.
      *
      * @param exceptionWebhook the annotation
      * @param exception the exception
@@ -80,8 +76,7 @@ public class WebhooksAOP {
     }
 
     /**
-     * Handler of the {@link DataInWebhook}. The target annotated method
-     * will be invoked with the result returned by the webhook method.
+     * Handler of the {@link DataInWebhook} annotation.
      *
      * @param joinPoint the proceeding join point
      * @param dataInWebhook the annotation
@@ -129,8 +124,7 @@ public class WebhooksAOP {
     }
 
     /**
-     * Handler of the {@link DataOutWebhook}. The result of the target annotated method
-     * will be provided as argument to the webhook method.
+     * Handler of the {@link DataOutWebhook} annotation.
      *
      * @param joinPoint the join point
      * @param dataOutWebhook the annotation
