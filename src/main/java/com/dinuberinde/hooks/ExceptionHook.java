@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotation used to access the exception thrown by a target method. <br/>
- * The hook method will be invoked <strong>after</strong> the target method throws an exception.
+ * The hook method will be triggered <strong>after</strong> the target method throws an exception.
  * <br/>
  *<p>Example:</p>
  *<pre class="code">
