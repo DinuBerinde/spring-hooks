@@ -85,8 +85,9 @@ public class WebhooksAOP {
      */
     @Around("@annotation(dataInWebhook)")
     public Object dataInHook(ProceedingJoinPoint joinPoint, DataInWebhook dataInWebhook) throws Throwable {
+        Object[] args = joinPoint.getArgs();
+
         try {
-            Object[] args = joinPoint.getArgs();
             Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
             Annotation[][] parameterAnnotations = method.getParameterAnnotations();
             Class<?>[] parametersType = method.getParameterTypes();
@@ -116,11 +117,11 @@ public class WebhooksAOP {
                 throw new IllegalArgumentException("Method " + method.getName() + " of " + method.getDeclaringClass().getName() + " has no @Data annotation");
             }
 
-            return joinPoint.proceed(args);
         } catch (Exception e) {
             logger.error("[DATA-IN webhook error]", e);
-            return null;
         }
+
+        return joinPoint.proceed(args);
     }
 
     /**
