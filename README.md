@@ -1,6 +1,6 @@
 # Spring hooks
  
-The goal of this project is to provide Spring based annotations to trigger the hook methods for a target method.
+The goal of this project is to provide Spring based annotations to trigger hook methods for a target method.
 A target method can be a REST endpoint or a traditional Java method.
 
 ## Features
