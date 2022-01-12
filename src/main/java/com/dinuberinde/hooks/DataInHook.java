@@ -3,15 +3,17 @@ package com.dinuberinde.hooks;
 import java.lang.annotation.*;
 
 /**
- * Annotation used to supply a target method with the result returned by the hook method.
+ * Annotation which supplies a target method with the result returned by the hook method.
  * It is used together with the {@link Data} annotation, which marks the parameter of the target method
  * that will be supplied.<br/>
- * The hook method will be invoked <strong>before</strong> the target method.
+ * The hook method will be triggered <strong>before</strong> the target method.
  * <br/>
  *<p>Example:</p>
  *<pre class="code">
  *  &#064;DataInHook(type = DataInHookSupplier.class, method = "dataIn", dataType = String.class)
- *  public void dataInExample(&#064;Data String input) { }
+ *  public void dataInExample(&#064;Data String input) {
+ *      // param input is supplied by the hook method
+ *   }
  *</pre>
  *
  *<p>Hook class and method:</p>

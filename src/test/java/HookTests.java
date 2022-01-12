@@ -1,6 +1,7 @@
 import com.dinuberinde.hooks.HooksAOP;
 import controller.Controller;
 import helper.DataHolder;
+import hooks.*;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
-import hooks.LogHookComponent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -33,11 +33,11 @@ public class HookTests {
         mockMvc.perform(get("/hello").contentType("application/json"))
                 .andExpect(status().isOk());
 
-        assertEquals("/hello", DataHolder.map.get("LogHookPRE").tag);
-        assertEquals("1", DataHolder.map.get("LogHookPRE").value);
+        assertEquals("/hello", DataHolder.map.get(LogHook.LOG_PRE).tag);
+        assertEquals("1", DataHolder.map.get(LogHook.LOG_PRE).value);
 
-        assertEquals("/hello", DataHolder.map.get("LogHookPOST").tag);
-        assertEquals("1", DataHolder.map.get("LogHookPOST").value);
+        assertEquals("/hello", DataHolder.map.get(LogHook.LOG_POST).tag);
+        assertEquals("1", DataHolder.map.get(LogHook.LOG_POST).value);
     }
 
     @Test
@@ -46,8 +46,8 @@ public class HookTests {
         mockMvc.perform(get("/hello-spring-component").contentType("application/json"))
                 .andExpect(status().isOk());
 
-        assertEquals("hello-spring-component", DataHolder.map.get("LogHookComponent").tag);
-        assertEquals("1", DataHolder.map.get("LogHookComponent").value);
+        assertEquals("hello-spring-component", DataHolder.map.get(LogHookComponent.class.getName()).tag);
+        assertEquals("1", DataHolder.map.get(LogHookComponent.class.getName()).value);
     }
 
     @Test
@@ -56,11 +56,11 @@ public class HookTests {
         mockMvc.perform(get("/hello-default-hook-methods").contentType("application/json"))
                 .andExpect(status().isOk());
 
-        assertEquals("mytag", DataHolder.map.get("LogHookDefaultPRE").tag);
-        assertEquals("1", DataHolder.map.get("LogHookDefaultPRE").value);
+        assertEquals("mytag", DataHolder.map.get(LogHookDefault.LOG_PRE).tag);
+        assertEquals("1", DataHolder.map.get(LogHookDefault.LOG_PRE).value);
 
-        assertEquals("mytag", DataHolder.map.get("LogHookDefaultPOST").tag);
-        assertEquals("1", DataHolder.map.get("LogHookDefaultPOST").value);
+        assertEquals("mytag", DataHolder.map.get(LogHookDefault.LOG_POST).tag);
+        assertEquals("1", DataHolder.map.get(LogHookDefault.LOG_POST).value);
     }
 
    @Test
@@ -70,29 +70,29 @@ public class HookTests {
                .andExpect(status().isOk());
 
 
-       assertEquals("/hello-multiple-hooks", DataHolder.map.get("LogHookDefaultPRE").tag);
-       assertEquals("2", DataHolder.map.get("LogHookDefaultPRE").value);
-       assertEquals("/hello-multiple-hooks", DataHolder.map.get("LogHookDefaultPOST").tag);
-       assertEquals("2", DataHolder.map.get("LogHookDefaultPOST").value);
+       assertEquals("/hello-multiple-hooks", DataHolder.map.get(LogHookDefault.LOG_PRE).tag);
+       assertEquals("2", DataHolder.map.get(LogHookDefault.LOG_PRE).value);
+       assertEquals("/hello-multiple-hooks", DataHolder.map.get(LogHookDefault.LOG_POST).tag);
+       assertEquals("2", DataHolder.map.get(LogHookDefault.LOG_POST).value);
 
-       assertEquals("/hello-multiple-hooks", DataHolder.map.get("LogHookPRE").tag);
-       assertEquals("2", DataHolder.map.get("LogHookPRE").value);
-       assertEquals("/hello-multiple-hooks", DataHolder.map.get("LogHookPOST").tag);
-       assertEquals("2", DataHolder.map.get("LogHookPOST").value);
+       assertEquals("/hello-multiple-hooks", DataHolder.map.get(LogHook.LOG_PRE).tag);
+       assertEquals("2", DataHolder.map.get(LogHook.LOG_PRE).value);
+       assertEquals("/hello-multiple-hooks", DataHolder.map.get(LogHook.LOG_POST).tag);
+       assertEquals("2", DataHolder.map.get(LogHook.LOG_POST).value);
    }
 
     @Test
     @Order(5)
-    public void shouldCallExceptioHook() {
+    public void shouldCallExceptionHook() {
         try {
             mockMvc.perform(get("/exception").contentType("application/json"))
                     .andExpect(status().is5xxServerError());
         } catch (Exception e) {
-            assertEquals(DataHolder.map.get("Exception").value, "java.lang.NullPointerException");
-            assertEquals(DataHolder.map.get("Exception").tag, "myexceptiontag");
+            assertEquals(DataHolder.map.get(LogException.class.getName()).value, "java.lang.NullPointerException");
+            assertEquals(DataHolder.map.get(LogException.class.getName()).tag, "myexceptiontag");
 
-            assertEquals("/exception", DataHolder.map.get("LogHookPOST").tag);
-            assertEquals("3", DataHolder.map.get("LogHookPOST").value);
+            assertEquals("/exception", DataHolder.map.get(LogHook.LOG_POST).tag);
+            assertEquals("3", DataHolder.map.get(LogHook.LOG_POST).value);
         }
     }
 
@@ -102,8 +102,8 @@ public class HookTests {
         mockMvc.perform(get("/hello-http-servlet-request?query=tomcat").contentType("application/json"))
                 .andExpect(status().isOk());
 
-        assertEquals("/hello-http-servlet-request", DataHolder.map.get("LogHttpServletRequestHook").tag);
-        assertEquals("query=tomcat", DataHolder.map.get("LogHttpServletRequestHook").value);
+        assertEquals("/hello-http-servlet-request", DataHolder.map.get(LogHttpServletRequestHook.class.getName()).tag);
+        assertEquals("query=tomcat", DataHolder.map.get(LogHttpServletRequestHook.class.getName()).value);
     }
 
     @Test
@@ -113,20 +113,20 @@ public class HookTests {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        assertEquals("spring@this is injected by the hook method", result);
-        assertEquals("this is injected by the hook method", DataHolder.map.get("DataInHookSupplier").value);
-        assertEquals("", DataHolder.map.get("DataInHookSupplier").tag);
+        assertEquals("spring@this is supplied by the hook method", result);
+        assertEquals("this is supplied by the hook method", DataHolder.map.get(DataInHookSupplier.class.getName()).value);
+        assertEquals("", DataHolder.map.get(DataInHookSupplier.class.getName()).tag);
     }
 
     @Test
     @Order(8)
     public void shouldCallDataOutHook() throws Exception {
-        String result = mockMvc.perform(get("/data-out?value=dataOutTest").contentType("application/json"))
+        String result = mockMvc.perform(get("/data-out?value=dataOutTestValue").contentType("application/json"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        assertEquals("dataOutTest", result);
-        assertEquals("dataOutTest", DataHolder.map.get("DataOutHookConsumer").value);
-        assertEquals("", DataHolder.map.get("DataOutHookConsumer").tag);
+        assertEquals("dataOutTestValue", result);
+        assertEquals("dataOutTestValue", DataHolder.map.get(DataOutHookConsumer.class.getName()).value);
+        assertEquals("", DataHolder.map.get(DataOutHookConsumer.class.getName()).tag);
     }
 }

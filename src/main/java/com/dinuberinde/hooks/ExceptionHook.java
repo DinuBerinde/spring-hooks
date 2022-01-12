@@ -16,7 +16,7 @@ import java.lang.annotation.*;
  *<pre class="code">
  *public class LogException {
  *  public void exception(String tag, Exception exception) {
- *      // access exception
+ *      // handle exception
  *  }
  * }
  *</pre>

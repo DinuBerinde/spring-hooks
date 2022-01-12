@@ -29,7 +29,7 @@ public class HooksAOP {
     private final Map<String, Optional<Object>> hookObjectsCache = new ConcurrentHashMap<>();
     private final static Map<Class<?>, String> annotations = new HashMap<>() {{
        put(PreHook.class, "pre"); put(PostHook.class, "post"); put(ExceptionHook.class, "exception");
-       put(DataInHook.class, "dataIn"); put(DataOutHook.class, "dataOut");
+       put(DataOutHook.class, "dataIn"); put(DataInHook.class, "dataOut");
     }};
 
     /**

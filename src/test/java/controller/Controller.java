@@ -54,8 +54,8 @@ public class Controller {
      *
      * The default method of {@link PreHook} class is pre()
      * The default method of {@link PostHook} class is post()
-     * The default method of {@link DataOutHook} class is dataOut(<T>)
-     * The default method of {@link DataInHook} class is dataIn()
+     * The default method of {@link DataInHook} class is dataOut(<T>)
+     * The default method of {@link DataOutHook} class is dataIn()
      * The default method of {@link ExceptionHook} class is exception(Exception)
      */
     @PostHook(type = LogHookDefault.class)
@@ -95,12 +95,13 @@ public class Controller {
      * Example of a hook that supplies data to the current endpoint method.
      *
      * The dataIn() hook method of {@link DataInHookSupplier} gets invoked BEFORE the dataInExample() method
-     * and the returned value of the hook method gets binded to the parameter annotated with {@link Data} of dataInExample(), in this case dataValueInjectByHook.
+     * and the returned value of the hook method gets binded to the parameter annotated with {@link Data}
+     * of dataInExample(), in this case dataValueSuppliedByHook.
      */
     @DataInHook(type = DataInHookSupplier.class, method = "dataIn", dataType = String.class)
     @GetMapping(value = "data-in")
-    public String dataInExample(String value, @Data String dataValueInjectByHook) {
-        return value + "@" + dataValueInjectByHook;
+    public String dataInExample(String value, @Data String dataValueSuppliedByHook) {
+        return value + "@" + dataValueSuppliedByHook;
     }
 
     /**

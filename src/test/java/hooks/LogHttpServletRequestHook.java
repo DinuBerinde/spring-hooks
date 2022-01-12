@@ -10,6 +10,6 @@ public class LogHttpServletRequestHook {
 
     public void pre(String tag) {
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        DataHolder.map.put("LogHttpServletRequestHook", new DataHolder.Logger(tag, request.getQueryString()));
+        DataHolder.map.put(LogHttpServletRequestHook.class.getName(), new DataHolder.Logger(tag, request.getQueryString()));
     }
 }

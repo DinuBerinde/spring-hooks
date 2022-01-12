@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 
 /**
- * Annotation used to trigger a hook method invocation <strong>after</strong> the target method finished normally or with an exception.
+ * Annotation used to trigger a hook method <strong>after</strong> the target method finished normally or with an exception.
  * <br/>
  *<p>Example:</p>
  *<pre class="code">

@@ -9,7 +9,9 @@ import java.lang.annotation.*;
  *
  *<pre class="code">
  *  &#064;DataInHook(type = DataInHookSupplier.class, method = "dataIn", dataType = String.class)
- *  public void dataInExample(&#064;Data String input) { }
+ *  public void dataInExample(&#064;Data String input) {
+ *      // param input is supplied by the hook method
+ *  }
  *</pre>
  */
 @Retention(RetentionPolicy.RUNTIME)

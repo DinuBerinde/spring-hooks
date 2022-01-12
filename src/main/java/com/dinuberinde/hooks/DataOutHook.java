@@ -2,15 +2,17 @@ package com.dinuberinde.hooks;
 
 import java.lang.annotation.*;
 
+
+
 /**
- * Annotation used to supply a hook method with the result returned by the target method.<br/>
- * The hook method will be invoked <strong>after</strong> the target method.
+ * Annotation which allows the hook method to consume data returned by the target method.<br/>
+ * The hook method will be triggered <strong>after</strong> the target method.
  * <br/>
  *<p>Example:</p>
  *<pre class="code">
  *  &#064;DataOutHook(type = DataOutHookConsumer.class, method = "dataOut", dataType = String.class)
  *  public String dataOutExample() {
- *      return "string passed to the hook method datOut(String)";
+ *      return "string passed to the hook method datOut(String, String)";
  *  }
  *</pre>
  *

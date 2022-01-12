@@ -3,7 +3,7 @@ package com.dinuberinde.hooks;
 import java.lang.annotation.*;
 
 /**
- * Annotation used to trigger a hook method invocation <strong>before</strong> the target method.
+ * Annotation used to trigger a hook method <strong>before</strong> the target method.
  * <br/>
  *<p>Example:</p>
  *<pre class="code">
