@@ -1,4 +1,4 @@
-package webhooks;
+package hooks;
 
 import helper.DataHolder;
 

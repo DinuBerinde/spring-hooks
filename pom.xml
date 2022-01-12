@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.dinuberinde</groupId>
-    <artifactId>spring-webhooks</artifactId>
+    <artifactId>spring-hooks</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>spring-webhooks</name>
-    <description>Spring webhooks</description>
+    <name>spring-hooks</name>
+    <description>Spring hooks</description>
 
     <developers>
         <developer>
