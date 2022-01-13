@@ -1,12 +1,11 @@
 package hooks;
 
+import com.dinuberinde.hooks.Hook;
 import helper.DataHolder;
 
 public class LogException {
 
-    public void exception(String tag, Exception exception) {
-        final String tag_ = !tag.isEmpty() ? tag : "myexceptiontag";
-
-        DataHolder.map.put(LogException.class.getName(), new DataHolder.Logger(tag_, exception.getClass().getName()));
+    public void exception(Hook hook) {
+        DataHolder.map.put(LogException.class.getName(), new DataHolder.Logger(hook.getTag(), hook.getException().getClass().getName()));
     }
 }
