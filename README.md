@@ -16,11 +16,11 @@ A target method can be a REST endpoint or a traditional Java method.
 @RestController
 public class Controller {
 
-    @PreHook(type = LogHook.class, tag = "/hello")
-    @PostHook(type = LogHook.class, tag = "/hello")
+    @PreHook(definingClass = LogHook.class, tag = "/hello")
+    @PostHook(definingClass = LogHook.class, tag = "/hello")
     @GetMapping(value = "hello")
     public void helloEndpoint() {
-      System.out.println("doing something inside /hello endpoint");
+        ...
     }
 }
 
