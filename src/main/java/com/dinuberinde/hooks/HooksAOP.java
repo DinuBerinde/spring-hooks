@@ -96,11 +96,11 @@ public class HooksAOP {
             for (int i = 0; i < args.length; i++) {
                 for (Annotation paramAnnotation : parameterAnnotations[i]) {
 
-                    if (dataAnnotationFound) {
-                        throw new IllegalArgumentException("Method [" + method + "] of [" + method.getDeclaringClass().getName() + "] can contain at most one @Data annotation");
-                    }
-
                     if (paramAnnotation instanceof Data) {
+                        if (dataAnnotationFound) {
+                            throw new IllegalArgumentException("Method [" + method + "] of [" + method.getDeclaringClass().getName() + "] can contain at most one @Data annotation");
+                        }
+
                         if (!parametersType[i].equals(dataInHook.dataType())) {
                             throw new IllegalArgumentException("Argument type mismatch. @DataInHook data type was " + dataInHook.dataType().getName() + " but "
                             + parametersType[i].getName() + " was provided for [" + method + "] of [" + method.getDeclaringClass().getName()+ "]");
