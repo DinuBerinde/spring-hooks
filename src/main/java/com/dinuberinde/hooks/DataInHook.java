@@ -5,30 +5,31 @@ import java.lang.annotation.*;
 /**
  * Annotation which supplies a target method with the result returned by the hook method.
  * It is used together with the {@link Data} annotation, which marks the parameter of the target method
- * that will be supplied.<br/>
+ * that will be supplied.<br/>The return type of the hook method must match the type of the parameter annotated
+ * with the {@link Data} annotation.<br/>
  * The hook method will be triggered <strong>before</strong> the target method.
  * <br/>
  *<p>Example:</p>
  *<pre class="code">
- *  &#064;DataInHook(type = DataInHookSupplier.class, method = "dataIn", dataType = String.class)
+ *  &#064;DataInHook(definingClass = DataInHookSupplier.class, method="dataIn")
  *  public void dataInExample(&#064;Data String input) {
- *      // param input is supplied by the hook method
+ *      System.out.println(input); // prints: this is supplied by the hook method
  *   }
  *</pre>
  *
  *<p>Hook class and method:</p>
  <pre class="code">
  *public class DataInHookSupplier {
- *  public String dataIn(String tag) {
+ *  public String dataIn(Hook hook) {
  *      return "this is supplied by the hook method";
  *  }
  *}
  *</pre>
  *
  * <p>
- * The hook method signature must be: <br/> <strong>{@code public T methodName(String)}</strong><br/>
+ * The hook method signature must be: <br/> <strong>{@code public T methodName(Hook)}</strong><br/>
  * If the hook method does not get specified, the annotation assumes that
- * the hook class has the following method defined: <br/> <strong>{@code public T dataIn(String)}</strong>
+ * the hook class has the following method defined: <br/> <strong>{@code public T dataIn(Hook)}</strong>
  * </p>
  */
 @Documented
@@ -37,19 +38,14 @@ import java.lang.annotation.*;
 public @interface DataInHook {
 
     /**
-     * The class type of the hook
+     * The defining class of the hook
      */
-    Class<?> type();
+    Class<?> definingClass();
 
     /**
      * The method name of the hook
      */
     String method() default "dataIn";
-
-    /**
-     * The return class type of the hook method
-     */
-    Class<?> dataType();
 
     /**
      * The tag of the hook

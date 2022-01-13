@@ -8,23 +8,27 @@ import java.lang.annotation.*;
  * <br/>
  *<p>Example:</p>
  *<pre class="code">
- *  &#064;ExceptionHook(type = LogException.class, method = "exception")
- *  public void exceptionExample() { }
+ *  &#064;ExceptionHook(definingClass = LogException.class, method = "exception")
+ *  public void exceptionExample() {
+ *      String a = null;
+ *      a.length();
+ *  }
  *</pre>
  *
  *<p>Hook class and method:</p>
  *<pre class="code">
  *public class LogException {
- *  public void exception(String tag, Exception exception) {
+ *  public void exception(Hook hook) {
  *      // handle exception
+ *      Exception exception = hook.getException();
  *  }
  * }
  *</pre>
  *
  * <p>
- * The hook method signature must be: <br/> <strong>{@code public T methodName(String, Exception)}</strong><br/>
+ * The hook method signature must be: <br/> <strong>{@code public T methodName(Hook)}</strong><br/>
  * If the hook method does not get specified, the annotation assumes that
- * the hook class has the following method defined: <br/><strong{@code public T exception(String, Exception)}</strong>
+ * the hook class has the following method defined: <br/><strong{@code public T exception(Hook)}</strong>
  * </p>
  */
 @Documented
@@ -33,9 +37,9 @@ import java.lang.annotation.*;
 public @interface ExceptionHook {
 
     /**
-     * The class type of the hook
+     * The defining class of the hook
      */
-    Class<?> type();
+    Class<?> definingClass();
 
     /**
      * The method name of the hook. It defaults to {@code exception}

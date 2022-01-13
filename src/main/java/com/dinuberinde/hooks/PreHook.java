@@ -7,23 +7,23 @@ import java.lang.annotation.*;
  * <br/>
  *<p>Example:</p>
  *<pre class="code">
- *  &#064;PreHook(type = LogHook.class, method = "logPre", tag = "/hello")
+ *  &#064;PreHook(definingClass = LogHook.class, method = "log", tag = "/hello")
  *  public void hello() { }
  *</pre>
  *
  *<p>Hook class and method:</p>
  *<pre class="code">
  *public class LogHook {
- *  public void logPre(String tag) {
- *      // log tag
+ *  public void log(Hook hook) {
+ *      // log something
  *  }
  * }
  *</pre>
  *
  * <p>
- * The hook method signature must be: <br/> <strong>{@code public T methodName(String)}</strong><br/>
+ * The hook method signature must be: <br/> <strong>{@code public T methodName(Hook)}</strong><br/>
  * If the hook method does not get specified, the annotation assumes that
- * the hook class has the following method defined: <br/> <strong>{@code public T pre(String)}</strong>
+ * the hook class has the following method defined: <br/> <strong>{@code public T pre(Hook)}</strong>
  * </p>
  */
 @Documented
@@ -32,9 +32,9 @@ import java.lang.annotation.*;
 public @interface PreHook {
 
     /**
-     * The class type of the hook
+     * The defining class of the hook
      */
-    Class<?>[] type();
+    Class<?>[] definingClass();
 
     /**
      * The method name of the hook

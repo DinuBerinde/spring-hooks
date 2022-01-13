@@ -1,6 +1,5 @@
 package com.dinuberinde.hooks;
 
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -40,7 +39,7 @@ public class HooksAOP {
     @Before("@annotation(preHook)")
     public void preHook(PreHook preHook) {
         try {
-            callHooks(preHook, preHook.type(), preHook.method(), preHook.tag());
+            callHooks(preHook, preHook.definingClass(), preHook.method(), preHook.tag());
         } catch (Exception e) {
             logger.error("[PRE hook error]", e);
         }
@@ -54,7 +53,7 @@ public class HooksAOP {
     @After("@annotation(postHook)")
     public void postHook(PostHook postHook) {
         try {
-            callHooks(postHook, postHook.type(), postHook.method(), postHook.tag());
+            callHooks(postHook, postHook.definingClass(), postHook.method(), postHook.tag());
         } catch (Exception e) {
             logger.error("[POST hook error]", e);
         }
@@ -69,7 +68,7 @@ public class HooksAOP {
     @AfterThrowing(pointcut = "@annotation(exceptionHook)", throwing = "exception")
     public void exceptionHook(ExceptionHook exceptionHook, Exception exception) {
         try {
-            callHook(exceptionHook, exceptionHook.type(), exceptionHook.method(), new Class[]{String.class, Exception.class}, new Object[]{exceptionHook.tag(), exception});
+            callHook(exceptionHook, exceptionHook.definingClass(), exceptionHook.method(), new Class[]{Hook.class}, new Object[]{new Hook(exceptionHook.tag(), null, exception)});
         } catch (Exception e) {
             logger.error("[EXCEPTION hook error]", e);
         }
@@ -90,31 +89,26 @@ public class HooksAOP {
         try {
             Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
             Annotation[][] parameterAnnotations = method.getParameterAnnotations();
-            Class<?>[] parametersType = method.getParameterTypes();
 
             boolean dataAnnotationFound = false;
             for (int i = 0; i < args.length; i++) {
                 for (Annotation paramAnnotation : parameterAnnotations[i]) {
 
                     if (paramAnnotation instanceof Data) {
+
                         if (dataAnnotationFound) {
                             throw new IllegalArgumentException("Method [" + method + "] of [" + method.getDeclaringClass().getName() + "] can contain at most one @Data annotation");
                         }
 
-                        if (!parametersType[i].equals(dataInHook.dataType())) {
-                            throw new IllegalArgumentException("Argument type mismatch. @DataInHook data type was " + dataInHook.dataType().getName() + " but "
-                            + parametersType[i].getName() + " was provided for [" + method + "] of [" + method.getDeclaringClass().getName()+ "]");
-                        }
-
-                        // we bind the result of the hook to the argument annotated with Data
-                        args[i] = callHook(dataInHook, dataInHook.type(), dataInHook.method(), new Class[]{String.class}, new Object[]{dataInHook.tag()});
+                        // we supply the result of the hook method to the argument annotated with Data
+                        args[i] = callHook(dataInHook, dataInHook.definingClass(), dataInHook.method(), new Class[]{Hook.class}, new Object[]{new Hook(dataInHook.tag())});
                         dataAnnotationFound = true;
                     }
                 }
             }
 
             if (!dataAnnotationFound) {
-                throw new IllegalArgumentException("Method " + method.getName() + " of " + method.getDeclaringClass().getName() + " has no @Data annotation");
+                throw new IllegalArgumentException("Method " + method.getName() + " of " + method.getDeclaringClass().getName() + " has no @Data annotated parameter");
             }
 
         } catch (Exception e) {
@@ -127,47 +121,38 @@ public class HooksAOP {
     /**
      * Handler of the {@link DataOutHook} annotation.
      *
-     * @param joinPoint the join point
      * @param dataOutHook the annotation
      * @param result the result of the target annotated method
      */
     @AfterReturning(value = "@annotation(dataOutHook)", returning = "result")
-    public void dataOutHook(JoinPoint joinPoint, DataOutHook dataOutHook, Object result) {
+    public void dataOutHook(DataOutHook dataOutHook, Object result) {
         try {
-            Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
-
-            if (!method.getReturnType().equals(dataOutHook.dataType())) {
-                throw new IllegalArgumentException("Return type of method [" + method + "] of " + method.getDeclaringClass().getName() +
-                        " should have the same return type " + dataOutHook.dataType().getName() + " as the hook method [" + dataOutHook.method() + "] of " + dataOutHook.type().getName()
-                );
-            }
-
-            callHook(dataOutHook, dataOutHook.type(), dataOutHook.method(), new Class[] {String.class, dataOutHook.dataType()}, new Object[]{dataOutHook.tag(), result});
+            callHook(dataOutHook, dataOutHook.definingClass(), dataOutHook.method(), new Class[] {Hook.class}, new Object[]{new Hook(dataOutHook.tag(), result)});
         } catch (Exception e) {
             logger.error("[DATA-OUT hook error]", e);
         }
     }
 
-    private void callHooks(Annotation annotation, Class<?>[] types, String[] hookMethods, String tag) throws NoSuchMethodException {
-        for (int i = 0; i < types.length; i++) {
-            callHook(annotation, types[i], getSafeHookMethodName(hookMethods, i, annotation), new Class[]{String.class}, new Object[]{tag});
+    private void callHooks(Annotation annotation, Class<?>[] definingClasses, String[] hookMethods, String tag) throws NoSuchMethodException {
+        for (int i = 0; i < definingClasses.length; i++) {
+            callHook(annotation, definingClasses[i], getSafeHookMethodName(hookMethods, i, annotation), new Class[]{Hook.class}, new Object[]{new Hook(tag)});
         }
     }
 
     /**
      * It calls the hook method.
      * @param annotation the hook annotation
-     * @param type the type class of the hook
+     * @param definingClass the defining class of the hook
      * @param methodName the method name of the hook
      * @param typeParameters the type parameters of the hook method
      * @param args the arguments to be passed to the method
      * @return the result of the hook method or null if the hook method returns void
      */
-    private Object callHook(Annotation annotation, Class<?> type, String methodName, Class<?>[] typeParameters, Object[] args) throws NoSuchMethodException {
-        Method hookMethod = type.getMethod(methodName, typeParameters);
+    private Object callHook(Annotation annotation, Class<?> definingClass, String methodName, Class<?>[] typeParameters, Object[] args) throws NoSuchMethodException {
+        Method hookMethod = definingClass.getMethod(methodName, typeParameters);
         String hookName = annotations.get(annotation.annotationType());
-        logger.debug("[" + hookName.toUpperCase() + " hook] calling method [" + hookMethod + "] of [" + type.getName() + "]");
-        Optional<Object> hookObject = hookObjectsCache.computeIfAbsent(getHookObjectKey(type, methodName), k -> getHookObject(type));
+        logger.debug("[" + hookName.toUpperCase() + " hook] calling method [" + hookMethod + "] of [" + definingClass.getName() + "]");
+        Optional<Object> hookObject = hookObjectsCache.computeIfAbsent(getHookObjectKey(definingClass, methodName), k -> getHookObject(definingClass));
         return hookObject.map(instance -> ReflectionUtils.invokeMethod(hookMethod, instance, args)).orElse(null);
     }
 
