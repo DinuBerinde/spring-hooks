@@ -58,7 +58,7 @@ public class Controller {
     @DataInHook(definingClass = PersonDataInHook.class)
     @DataOutHook(definingClass = PersonDataOutHook.class)
     @PostMapping(value = "create-person", produces = MediaType.APPLICATION_JSON_VALUE)
-    public Person createPerson(@Data @RequestBody Person person) {
+    public Person createPerson(@DataIn @RequestBody Person person) {
         return person;
     }
 }
