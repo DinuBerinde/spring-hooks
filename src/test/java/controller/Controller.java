@@ -29,7 +29,7 @@ public class Controller {
      * You can use Spring beans too, for example {@link LogHookComponent}.
      * If not specified in the annotation, the default method name of a PostHook is post and pre for a PreHook.
      */
-    @PostHook(definingClass = {LogHookComponent.class, LogHook.class}, method = {"log"}, tag = "/hello-multiple-hooks")
+    @PostHook(definingClass = {LogHookComponent.class, NoArgsLogHook.class, LogHook.class}, method = {"log", "logNoArgs"}, tag = "/hello-multiple-hooks")
     @PreHook(definingClass = {LogHookComponent.class, LogHook.class}, method = {"log"}, tag = "/hello-multiple-hooks")
     @GetMapping(value = "hello-multiple-hooks")
     public void helloMultipleHooks(String query) {}

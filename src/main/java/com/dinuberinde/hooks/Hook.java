@@ -9,10 +9,6 @@ public class Hook {
         this(tag, null, null);
     }
 
-    public Hook(String tag, Object dataOut) {
-        this(tag, dataOut, null);
-    }
-
     public Hook(String tag, Object dataOut, Exception exception) {
         this.tag = tag;
         this.dataOut = dataOut;

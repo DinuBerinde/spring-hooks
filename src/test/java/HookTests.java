@@ -55,13 +55,21 @@ public class HookTests {
                .andExpect(status().isOk());
 
 
+       // testing hook spring component
        assertEquals("/hello-multiple-hooks", DataHolder.map.get(LogHookComponent.class.getName()).tag);
        assertEquals("2", DataHolder.map.get(LogHookComponent.class.getName()).value);
 
+       // testing the query param of the http servlet request
        assertEquals("/hello-multiple-hooks", DataHolder.map.get(LogHook.LOG_PRE).tag);
        assertEquals("hello-world", DataHolder.map.get(LogHook.LOG_PRE).value);
+
+       // testing the counter of the post hook
        assertEquals("/hello-multiple-hooks", DataHolder.map.get(LogHook.LOG_POST).tag);
        assertEquals("2", DataHolder.map.get(LogHook.LOG_POST).value);
+
+       // testing no args hook method
+       assertEquals("hook with no args", DataHolder.map.get(NoArgsLogHook.class.getName()).value);
+       assertEquals("notag", DataHolder.map.get(NoArgsLogHook.class.getName()).tag);
    }
 
     @Test
@@ -71,9 +79,11 @@ public class HookTests {
             mockMvc.perform(get("/exception").contentType("application/json"))
                     .andExpect(status().is5xxServerError());
         } catch (Exception e) {
+            // testing the actual exception of the target method
             assertEquals("java.lang.NullPointerException", DataHolder.map.get(LogException.class.getName()).value);
             assertEquals("/exception", DataHolder.map.get(LogException.class.getName()).tag);
 
+            // testing the counter of the post hook
             assertEquals("/exception", DataHolder.map.get(LogHook.LOG_POST).tag);
             assertEquals("3", DataHolder.map.get(LogHook.LOG_POST).value);
         }
