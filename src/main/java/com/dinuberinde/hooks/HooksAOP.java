@@ -98,7 +98,7 @@ public class HooksAOP {
             for (int i = 0; i < args.length; i++) {
                 for (Annotation paramAnnotation : parameterAnnotations[i]) {
 
-                    if (paramAnnotation instanceof Data) {
+                    if (paramAnnotation instanceof DataIn) {
 
                         if (dataAnnotationFound) {
                             throw new IllegalArgumentException("Method [" + method + "] of [" + method.getDeclaringClass().getName() + "] can contain at most one @Data annotation");
@@ -150,7 +150,7 @@ public class HooksAOP {
      * @param methodName the method name of the hook
      * @param tag the tag of the hook if present
      * @param exception the exception of the hook if any
-     * @param dataOut the exception of the hook if any
+     * @param dataOut the data out of the hook if any
      * @return the result of the hook method or null if the hook method returns void
      */
     private Object callHook(Annotation annotation, Class<?> definingClass, String methodName, String tag, Exception exception, Object dataOut) throws NoSuchMethodException {

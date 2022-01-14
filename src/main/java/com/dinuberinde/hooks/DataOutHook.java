@@ -4,15 +4,15 @@ import java.lang.annotation.*;
 
 
 /**
- * Annotation which allows the hook method to consume data returned by the target method.<br/>
+ * Annotation which allows the hook method to consume data returned by the target method.<br/><br/>
  * The hook method will be triggered <strong>after</strong> the target method finished normally without an exception.
  * <br/>
  *<p>Example:</p>
  *<pre class="code">
- *  &#064;DataOutHook(definingClass = DataOutHookConsumer.class, method = "dataOut")
- *  public String dataOutExample() {
- *      return "string passed to the hook method";
- *  }
+ *&#064;DataOutHook(definingClass = DataOutHookConsumer.class, method = "dataOut")
+ *public String dataOutExample() {
+ *  return "string passed to the hook method";
+ *}
  *</pre>
  *
  *<p>Hook class and method:</p>
@@ -27,9 +27,8 @@ import java.lang.annotation.*;
  *</pre>
  *
  * <p>
- * The hook method signature must be: <br/> <strong>{@code public T methodName(Hook)}</strong><br/>
- * If the hook method does not get specified, the annotation assumes that
- * the hook class has the following method defined: <br/> <strong>{@code public T dataOut(Hook)}</strong>
+ * The hook method must be {@code public} and accepts {@link Hook} as an optional parameter.
+ * The default name of the hook method is <strong>dataOut</strong>
  * </p>
  */
 @Documented

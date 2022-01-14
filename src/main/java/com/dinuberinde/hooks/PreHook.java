@@ -7,8 +7,8 @@ import java.lang.annotation.*;
  * <br/>
  *<p>Example:</p>
  *<pre class="code">
- *  &#064;PreHook(definingClass = LogHook.class, method = "log", tag = "/hello")
- *  public void hello() { }
+ *&#064;PreHook(definingClass = LogHook.class, method = "log", tag = "/hello")
+ *public void hello() { }
  *</pre>
  *
  *<p>Hook class and method:</p>
@@ -21,9 +21,8 @@ import java.lang.annotation.*;
  *</pre>
  *
  * <p>
- * The hook method signature must be: <br/> <strong>{@code public T methodName(Hook)}</strong><br/>
- * If the hook method does not get specified, the annotation assumes that
- * the hook class has the following method defined: <br/> <strong>{@code public T pre(Hook)}</strong>
+ * The hook method must be {@code public} and accepts {@link Hook} as an optional parameter.
+ * The default name of the hook method is <strong>pre</strong>
  * </p>
  */
 @Documented
