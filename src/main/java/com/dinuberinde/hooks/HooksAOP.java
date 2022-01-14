@@ -12,10 +12,9 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Aspect
 @Configuration
@@ -24,12 +23,17 @@ public class HooksAOP {
     @Autowired
     private ApplicationContext context;
 
-    private final static Logger logger = LoggerFactory.getLogger(HooksAOP.class);
+    private static final Logger logger = LoggerFactory.getLogger(HooksAOP.class);
+    private static final Map<Class<?>, String> annotations = new HashMap<>();
     private final Map<String, Optional<Object>> hookObjectsCache = new ConcurrentHashMap<>();
-    private final static Map<Class<?>, String> annotations = new HashMap<>() {{
-       put(PreHook.class, "pre"); put(PostHook.class, "post"); put(ExceptionHook.class, "exception");
-       put(DataOutHook.class, "dataIn"); put(DataInHook.class, "dataOut");
-    }};
+
+    static {
+        annotations.put(PreHook.class, "pre");
+        annotations.put(PostHook.class, "post");
+        annotations.put(ExceptionHook.class, "exception");
+        annotations.put(DataOutHook.class, "dataIn");
+        annotations.put(DataInHook.class, "dataOut");
+    }
 
     /**
      * Handler of {@link PreHook} annotation.
@@ -68,7 +72,7 @@ public class HooksAOP {
     @AfterThrowing(pointcut = "@annotation(exceptionHook)", throwing = "exception")
     public void exceptionHook(ExceptionHook exceptionHook, Exception exception) {
         try {
-            callHook(exceptionHook, exceptionHook.definingClass(), exceptionHook.method(), new Class[]{Hook.class}, new Object[]{new Hook(exceptionHook.tag(), null, exception)});
+            callHook(exceptionHook, exceptionHook.definingClass(), exceptionHook.method(), exceptionHook.tag(), exception, null);
         } catch (Exception e) {
             logger.error("[EXCEPTION hook error]", e);
         }
@@ -101,7 +105,7 @@ public class HooksAOP {
                         }
 
                         // we supply the result of the hook method to the argument annotated with Data
-                        args[i] = callHook(dataInHook, dataInHook.definingClass(), dataInHook.method(), new Class[]{Hook.class}, new Object[]{new Hook(dataInHook.tag())});
+                        args[i] = callHook(dataInHook, dataInHook.definingClass(), dataInHook.method(), dataInHook.tag());
                         dataAnnotationFound = true;
                     }
                 }
@@ -127,7 +131,7 @@ public class HooksAOP {
     @AfterReturning(value = "@annotation(dataOutHook)", returning = "result")
     public void dataOutHook(DataOutHook dataOutHook, Object result) {
         try {
-            callHook(dataOutHook, dataOutHook.definingClass(), dataOutHook.method(), new Class[] {Hook.class}, new Object[]{new Hook(dataOutHook.tag(), result)});
+            callHook(dataOutHook, dataOutHook.definingClass(), dataOutHook.method(), dataOutHook.tag(), null, result);
         } catch (Exception e) {
             logger.error("[DATA-OUT hook error]", e);
         }
@@ -135,7 +139,7 @@ public class HooksAOP {
 
     private void callHooks(Annotation annotation, Class<?>[] definingClasses, String[] hookMethods, String tag) throws NoSuchMethodException {
         for (int i = 0; i < definingClasses.length; i++) {
-            callHook(annotation, definingClasses[i], getSafeHookMethodName(hookMethods, i, annotation), new Class[]{Hook.class}, new Object[]{new Hook(tag)});
+            callHook(annotation, definingClasses[i], getSafeHookMethodName(hookMethods, i, annotation), tag);
         }
     }
 
@@ -144,16 +148,22 @@ public class HooksAOP {
      * @param annotation the hook annotation
      * @param definingClass the defining class of the hook
      * @param methodName the method name of the hook
-     * @param typeParameters the type parameters of the hook method
-     * @param args the arguments to be passed to the method
+     * @param tag the tag of the hook if present
+     * @param exception the exception of the hook if any
+     * @param dataOut the exception of the hook if any
      * @return the result of the hook method or null if the hook method returns void
      */
-    private Object callHook(Annotation annotation, Class<?> definingClass, String methodName, Class<?>[] typeParameters, Object[] args) throws NoSuchMethodException {
-        Method hookMethod = definingClass.getMethod(methodName, typeParameters);
+    private Object callHook(Annotation annotation, Class<?> definingClass, String methodName, String tag, Exception exception, Object dataOut) throws NoSuchMethodException {
+        Method hookMethod = findHookMethod(definingClass, methodName);
+        Object[] args = hookMethod.getParameterTypes().length == 0 ? new Object[]{} : new Object[]{new Hook(tag, dataOut, exception)};
         String hookName = annotations.get(annotation.annotationType());
         logger.debug("[" + hookName.toUpperCase() + " hook] calling method [" + hookMethod + "] of [" + definingClass.getName() + "]");
         Optional<Object> hookObject = hookObjectsCache.computeIfAbsent(getHookObjectKey(definingClass, methodName), k -> getHookObject(definingClass));
         return hookObject.map(instance -> ReflectionUtils.invokeMethod(hookMethod, instance, args)).orElse(null);
+    }
+
+    private Object callHook(Annotation annotation, Class<?> definingClass, String methodName, String tag) throws NoSuchMethodException {
+        return callHook(annotation, definingClass, methodName, tag, null, null);
     }
 
 
@@ -211,5 +221,33 @@ public class HooksAOP {
 
     private static String getHookObjectKey(Class<?> type, String method) {
         return type.getName() + "@" + method;
+    }
+
+    private static Method findHookMethod(Class<?> definingClass, String methodName) throws NoSuchMethodException {
+        List<Method> methods = Arrays.stream(definingClass.getMethods()).filter(m -> m.getName().equals(methodName)).collect(Collectors.toList());
+        if (methods.isEmpty()) {
+            throw new NoSuchMethodException("No method [" + methodName + "] definition found on [" + definingClass.getName() + "]");
+        }
+
+        // find method with Hook param definition
+        Method method = findMethodWithParams(methods, new Class[]{Hook.class});
+        if (method != null) {
+            return method;
+        }
+
+        // find method with no param definition
+        method = findMethodWithParams(methods, new Class[]{});
+        if (method != null) {
+            return method;
+        }
+
+        throw new IllegalStateException("No suitable method definition was found for [" + methodName + "] of [" + definingClass.getName() + "]");
+    }
+
+    private static Method findMethodWithParams(List<Method> methods, Class<?>[] paramTypes) {
+        return methods.stream()
+                .filter(method -> Arrays.equals(method.getParameterTypes(), paramTypes))
+                .findAny()
+                .orElse(null);
     }
 }
