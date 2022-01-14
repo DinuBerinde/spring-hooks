@@ -101,7 +101,13 @@ public class HooksAOP {
                     if (paramAnnotation instanceof DataIn) {
 
                         if (dataAnnotationFound) {
-                            throw new IllegalArgumentException("Method [" + method + "] of [" + method.getDeclaringClass().getName() + "] can contain at most one @Data annotation");
+                            throw new IllegalArgumentException("Method [" + method + "]  can contain at most one @DataIn annotation");
+                        }
+
+                        Method hookMethod = findHookMethod(dataInHook.definingClass(), dataInHook.method());
+                        if (!hookMethod.getReturnType().equals(args[i].getClass())) {
+                            throw new IllegalArgumentException("Return type of method [" + dataInHook.method() + "] of [" + dataInHook.definingClass().getName() + "]" +
+                                    " must have type " + args[i].getClass().getName() +  ", parameter annotated with @DataIn of method [" + method + "]");
                         }
 
                         // we supply the result of the hook method to the argument annotated with Data
@@ -166,7 +172,6 @@ public class HooksAOP {
         return callHook(annotation, definingClass, methodName, tag, null, null);
     }
 
-
     /**
      * It returns the hook object instance to be invoked.
      * First it looks for a Spring bean and if no bean is found then
@@ -223,6 +228,13 @@ public class HooksAOP {
         return type.getName() + "@" + method;
     }
 
+    /**
+     * It looks for the hook method.
+     * @param definingClass the defining class of the hook
+     * @param methodName the name of the hook method
+     * @return the hook method
+     * @throws NoSuchMethodException if no method was found for the given methodName
+     */
     private static Method findHookMethod(Class<?> definingClass, String methodName) throws NoSuchMethodException {
         List<Method> methods = Arrays.stream(definingClass.getMethods()).filter(m -> m.getName().equals(methodName)).collect(Collectors.toList());
         if (methods.isEmpty()) {
