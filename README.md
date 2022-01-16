@@ -27,14 +27,14 @@ public class Controller {
 // Hook class and methods
 public class LogHook {
 
-    public void pre(String tag) {
-        System.out.println("pre hook called for " + tag);
+    public void pre(Hook hook) {
+        System.out.println("pre hook called for " + hook.getTag());
         HttpServletRequest httpRequest = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         // do something with the request
     }
 
-    public void post(String tag) {
-        System.out.println("post hook called for " + tag);    
+    public void post(Hook hook) {
+        System.out.println("post hook called for " + hook.getTag());    
     }
 }
 
