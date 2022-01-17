@@ -99,6 +99,15 @@ public class LogException {
     }
 }
 ```
+## Maven
+
+```xml
+<dependency>
+    <groupId>com.dinuberinde</groupId>
+    <artifactId>spring-hooks</artifactId>
+    <version>1.0</version>
+</dependency>
+```
 
 ## License
 
