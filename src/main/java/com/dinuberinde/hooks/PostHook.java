@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotation used to trigger a hook method <strong>after</strong> the target method finished normally or with an exception.
- * <br/>
+ * <br>
  *<p>Example:</p>
  *<pre class="code">
  *&#064;PostHook(definingClass = LogHook.class, method = "log", tag = "/hello")

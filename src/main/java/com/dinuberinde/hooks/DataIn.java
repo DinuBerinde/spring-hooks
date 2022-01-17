@@ -4,13 +4,13 @@ import java.lang.annotation.*;
 
 /**
  * Annotation used to mark the parameter of a target method when using {@link DataInHook}
- * <br/>
+ * <br>
  * <p>Example:</p>
  *
  *<pre class="code">
  *  &#064;DataInHook(type = DataInHookSupplier.class, method = "dataIn")
  *  public void dataInExample(&#064;DataIn String input) {
- *      // param input is supplied by the hook method
+ *      System.out.println(input); // prints: this is supplied by the hook method
  *  }
  *</pre>
  *

@@ -4,7 +4,7 @@ import java.lang.annotation.*;
 
 /**
  * Annotation used to trigger a hook method <strong>before</strong> the target method.
- * <br/>
+ * <br>
  *<p>Example:</p>
  *<pre class="code">
  *&#064;PreHook(definingClass = LogHook.class, method = "log", tag = "/hello")

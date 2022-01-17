@@ -3,9 +3,9 @@ package com.dinuberinde.hooks;
 import java.lang.annotation.*;
 
 /**
- * Annotation used to access the exception thrown by a target method. <br/><br/>
+ * Annotation used to access the exception thrown by a target method. <br><br>
  * The hook method will be triggered <strong>after</strong> the target method throws an exception.
- * <br/>
+ * <br>
  *<p>Example:</p>
  *<pre class="code">
  *&#064;ExceptionHook(definingClass = LogException.class, method = "exception")

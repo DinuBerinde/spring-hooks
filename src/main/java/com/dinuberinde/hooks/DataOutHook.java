@@ -4,9 +4,9 @@ import java.lang.annotation.*;
 
 
 /**
- * Annotation which allows the hook method to consume data returned by the target method.<br/><br/>
+ * Annotation which allows the hook method to consume data returned by the target method.<br><br>
  * The hook method will be triggered <strong>after</strong> the target method finished normally without an exception.
- * <br/>
+ * <br>
  *<p>Example:</p>
  *<pre class="code">
  *&#064;DataOutHook(definingClass = DataOutHookConsumer.class, method = "dataOut")
