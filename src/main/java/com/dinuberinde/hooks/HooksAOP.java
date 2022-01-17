@@ -25,6 +25,10 @@ public class HooksAOP {
 
     private static final Logger logger = LoggerFactory.getLogger(HooksAOP.class);
     private static final Map<Class<?>, String> annotations = new HashMap<>();
+
+    /**
+     * The cache map of the hook classes. Objects get created and recycled.
+     */
     private final Map<String, Optional<Object>> hookObjectsCache = new ConcurrentHashMap<>();
 
     static {
@@ -229,7 +233,8 @@ public class HooksAOP {
     }
 
     /**
-     * It looks for the hook method.
+     * It looks for the hook method. First it looks for a method definition with the {@link Hook} parameter
+     * and if such a method does not exist then it looks for parameterless method definition.
      * @param definingClass the defining class of the hook
      * @param methodName the name of the hook method
      * @return the hook method
@@ -253,7 +258,7 @@ public class HooksAOP {
             return method;
         }
 
-        throw new IllegalStateException("No suitable method definition was found for [" + methodName + "] of [" + definingClass.getName() + "]");
+        throw new NoSuchMethodException("No suitable method definition was found for [" + methodName + "] of [" + definingClass.getName() + "]");
     }
 
     private static Method findMethodWithParams(List<Method> methods, Class<?>[] paramTypes) {
