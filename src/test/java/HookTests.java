@@ -80,7 +80,7 @@ public class HookTests {
                     .andExpect(status().is5xxServerError());
         } catch (Exception e) {
             // testing the actual exception of the target method
-            assertEquals("java.lang.NullPointerException", DataHolder.map.get(LogException.class.getName()).value);
+            assertEquals("java.lang.IllegalStateException:exception example", DataHolder.map.get(LogException.class.getName()).value);
             assertEquals("/exception", DataHolder.map.get(LogException.class.getName()).tag);
 
             // testing the counter of the post hook

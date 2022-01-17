@@ -10,8 +10,7 @@ import java.lang.annotation.*;
  *<pre class="code">
  *&#064;ExceptionHook(definingClass = LogException.class, method = "exception")
  *public void exceptionExample() {
- *  String a = null;
- *  a.length();
+ *  throw new IllegalStateException("exception example");
  *}
  *</pre>
  *
@@ -21,6 +20,7 @@ import java.lang.annotation.*;
  *  public void exception(Hook hook) {
  *      // handle exception
  *      Exception exception = hook.getException();
+ *      System.out.println(exception.getMessage()); // prints: exception example
  *  }
  * }
  *</pre>

@@ -42,8 +42,7 @@ public class Controller {
     @PostHook(definingClass = LogHook.class, tag = "/exception")
     @GetMapping(value = "exception")
     public void exceptionExample() {
-        String a = null;
-        a.length();
+        throw new IllegalStateException("exception example");
     }
 
     /**
