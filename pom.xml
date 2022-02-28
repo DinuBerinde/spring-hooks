@@ -6,7 +6,7 @@
 
     <groupId>com.dinuberinde</groupId>
     <artifactId>spring-hooks</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
     <packaging>jar</packaging>
     <name>spring-hooks</name>
     <description>The goal of Spring Hooks is to provide Spring based annotations to trigger hook methods for a target method.</description>

@@ -105,7 +105,7 @@ public class LogException {
 <dependency>
     <groupId>com.dinuberinde</groupId>
     <artifactId>spring-hooks</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 </dependency>
 ```
 
