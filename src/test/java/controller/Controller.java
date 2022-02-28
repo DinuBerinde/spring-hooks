@@ -60,4 +60,14 @@ public class Controller {
     public Person createPerson(@DataIn @RequestBody Person person) {
         return person;
     }
+
+
+    /**
+     * Example of using {@link PreHook} as a JWT filter to filter access to a rest endpoint.
+     */
+    @GetMapping(value = "security-example")
+    @PreHook(definingClass = JWTHook.class, method = "secure")
+    public String securityExample(String query) {
+        return "rest api called " + query ;
+    }
 }

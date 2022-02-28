@@ -45,12 +45,8 @@ public class HooksAOP {
      * @param preHook the annotation
      */
     @Before("@annotation(preHook)")
-    public void preHook(PreHook preHook) {
-        try {
-            callHooks(preHook, preHook.definingClass(), preHook.method(), preHook.tag());
-        } catch (Exception e) {
-            logger.error("[PRE hook error]", e);
-        }
+    public void preHook(PreHook preHook) throws NoSuchMethodException {
+        callHooks(preHook, preHook.definingClass(), preHook.method(), preHook.tag());
     }
 
     /**

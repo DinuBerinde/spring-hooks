@@ -119,6 +119,27 @@ public class HookTests {
         assertEquals("tom", DataHolder.map.get(PersonDataOutHook.class.getName()).value);
     }
 
+    @Test
+    @Order(5)
+    public void shouldTriggerSecurityHook() throws Exception {
+        mockMvc.perform(get("/security-example")
+                        .contentType("application/json"))
+                .andExpect(status().is(403))
+                .andExpect(result -> assertEquals("not allowed to access api", result.getResponse().getErrorMessage()));
+    }
+
+    @Test
+    @Order(6)
+    public void shouldTriggerSecurityHookWithoutError() throws Exception {
+        String result = mockMvc.perform(get("/security-example?query=test")
+                        .header("jwt", "abcd")
+                        .contentType("application/json"))
+                .andExpect(status().is(200)).andReturn().getResponse().getContentAsString();
+
+        assertEquals("rest api called test", result);
+    }
+
+
     public static String toJsonString(Object obj) {
         try {
             return new ObjectMapper().writeValueAsString(obj);
